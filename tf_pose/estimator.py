@@ -535,12 +535,13 @@ class TfPoseEstimator:
     def inference(self, npimg, resize_to_default=True, upsample_size=1.0):
         if npimg is None:
             raise Exception('The image is not valid. Please check your image exists.')
-
+        
         if resize_to_default:
             upsample_size = [int(self.target_size[1] / 8 * upsample_size), int(self.target_size[0] / 8 * upsample_size)]
         else:
             upsample_size = [int(npimg.shape[0] / 8 * upsample_size), int(npimg.shape[1] / 8 * upsample_size)]
-
+        
+        
         if self.tensor_image.dtype == tf.quint8:
             # quantize input image
             npimg = TfPoseEstimator._quantize_img(npimg)
@@ -550,10 +551,29 @@ class TfPoseEstimator:
         img = npimg
         if resize_to_default:
             img = self._get_scaled_img(npimg, None)[0][0]
+        t = time.time()
+        
+        
+        #from tensorflow.core.protobuf import config_pb2
+        #from tensorflow.python.profiler import model_analyzer, option_builder
+
+        #run_options = config_pb2.RunOptions(trace_level=config_pb2.RunOptions.FULL_TRACE)
+        #run_metadata = config_pb2.RunMetadata()
+
+           
         peaks, heatMat_up, pafMat_up = self.persistent_sess.run(
             [self.tensor_peaks, self.tensor_heatMat_up, self.tensor_pafMat_up], feed_dict={
                 self.tensor_image: [img], self.upsample_size: upsample_size
-            })
+            }, 
+            #options=run_options, run_metadata=run_metadata
+        )
+        
+        #options = option_builder.ProfileOptionBuilder.time_and_memory()
+        #model_analyzer.profile(self.persistent_sess.graph, run_metadata, op_log=None, cmd='scope', options=options)  
+        
+        #open('full_graph_def.pb', 'wb').write(self.persistent_sess.graph.as_graph_def().SerializeToString())
+        
+        logger.debug('estimate Session time=%.5f' % (time.time() - t))
         peaks = peaks[0]
         self.heatMat = heatMat_up[0]
         self.pafMat = pafMat_up[0]
@@ -562,7 +582,7 @@ class TfPoseEstimator:
 
         t = time.time()
         humans = PoseEstimator.estimate_paf(peaks, self.heatMat, self.pafMat)
-        logger.debug('estimate time=%.5f' % (time.time() - t))
+        logger.debug('estimate PAF time=%.5f' % (time.time() - t))
         return humans
 
 
