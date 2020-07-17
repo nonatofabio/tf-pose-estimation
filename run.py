@@ -36,7 +36,7 @@ if __name__ == '__main__':
     if w == 0 or h == 0:
         e = TfPoseEstimator(get_graph_path(args.model), target_size=(432, 368))
     else:
-        e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h), trt_bool=True)
+        e = TfPoseEstimator(get_graph_path(args.model), target_size=(w, h))
 
     # estimate human poses from a single image !
     image = common.read_imgfile(args.image, None, None)

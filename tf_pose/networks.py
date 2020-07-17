@@ -129,7 +129,7 @@ def get_network(type, placeholder_input, sess_for_load=None, trainable=True):
 
 def get_graph_path(model_name):
     dyn_graph_path = {
-        'inf': 'graph/inf/graph_opt.pb'
+        'inf': 'graph/inf/graph_opt.pb',
         'cmu': 'graph/cmu/graph_opt.pb',
         'openpose_quantize': 'graph/cmu/graph_opt_q.pb',
         'mobilenet_thin': 'graph/mobilenet_thin/graph_opt.pb',
