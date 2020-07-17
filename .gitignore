@@ -108,6 +108,8 @@ timeline*.json
 # project customs 
 tmp
 models/graph/cmu*/*.pb
+models/*.pb
+models/graph/inf/*.pb
 models/trained/*/checkpoint
 models/trained/*/*.pb
 models/trained/*/model-*.data-*
